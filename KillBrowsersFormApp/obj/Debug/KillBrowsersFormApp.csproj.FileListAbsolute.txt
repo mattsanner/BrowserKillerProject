@@ -1,1 +1,22 @@
 c:\users\sanner\documents\visual studio 2015\Projects\KillBrowsersFormApp\KillBrowsersFormApp\bin\Debug\KillBrowsersFormApp.exe.config
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\KillBrowsersFormApp.exe.config
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\KillBrowsersFormApp.exe
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\KillBrowsersFormApp.pdb
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\Autofac.dll
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\EasyHttp.dll
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\FluentTc.dll
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\ICSharpCode.SharpZipLib.dll
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\JetBrains.TeamCity.ServiceMessages.dll
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\JsonFx.dll
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\System.IO.Abstractions.dll
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\Autofac.xml
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\EasyHttp.pdb
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\JetBrains.TeamCity.ServiceMessages.pdb
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\JetBrains.TeamCity.ServiceMessages.xml
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\bin\Debug\JsonFx.xml
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\obj\Debug\KillBrowsersFormApp.MainForm.resources
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\obj\Debug\KillBrowsersFormApp.Properties.Resources.resources
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\obj\Debug\KillBrowsersFormApp.csproj.GenerateResource.Cache
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\obj\Debug\KillBrowsersFormApp.exe
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\obj\Debug\KillBrowsersFormApp.pdb
+C:\Work\BrowserKillerProject\KillBrowsersFormApp\obj\Debug\KillBrowsersFormApp.csprojResolveAssemblyReference.cache
