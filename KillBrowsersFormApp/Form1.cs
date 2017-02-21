@@ -118,11 +118,19 @@ namespace KillBrowsersFormApp
         /// <returns>True if there are running builds, false if there are no running builds</returns>
         public static bool AreBuildsRunning()
         {
-            var builds = new RemoteTc().Connect(h => h.ToHost(TeamCityHost).AsUser(Username, Password))
-                .GetBuilds(b => b.Running());
-            File.AppendAllText(LogFilePath, "Active builds: " + builds.Count + '\n');
-            //Console.WriteLine("Active builds: " + builds.Count + '\n');
-            return builds.Count != 0;
+            try
+            {
+                var builds = new RemoteTc().Connect(h => h.ToHost(TeamCityHost).AsUser(Username, Password))
+                    .GetBuilds(b => b.Running());
+                File.AppendAllText(LogFilePath, "Active builds: " + builds.Count + '\n');
+                return builds.Count != 0;
+            }
+            catch(Exception e)
+            {
+                File.AppendAllText(LogFilePath, string.Format("Exception occurred when accessing TeamCity builds: \n{0}", e.Message));
+                //return true to make sure browser are not killed
+                return true;
+            }
         }
 
         public static string ReturnBrowsersKilledFromFile(string FilePath)
@@ -135,8 +143,8 @@ namespace KillBrowsersFormApp
                 return BrowsersKilled;
             }
             catch(Exception e)
-            {
-                File.Create(BrowsersKilledPath).Close();                
+            { 
+                File.Create(BrowsersKilledPath).Close();
                 return "0";
             }
         }
