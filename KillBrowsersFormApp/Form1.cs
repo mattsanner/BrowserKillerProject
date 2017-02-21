@@ -77,7 +77,8 @@ namespace KillBrowsersFormApp
         {
             string bkc = BrowsersKillCount.ToString();
             bkc = string.Format("BrowserKillCount={0}", bkc);
-            File.Delete(BrowsersKilledPath);
+            if(File.Exists(BrowsersKilledPath))
+                File.Delete(BrowsersKilledPath);
             File.AppendAllText(BrowsersKilledPath, bkc);
             File.AppendAllText(LogFilePath, "Closing program!\n");
         }
@@ -135,7 +136,7 @@ namespace KillBrowsersFormApp
             }
             catch(Exception e)
             {
-                File.Create(BrowsersKilledPath);
+                File.Create(BrowsersKilledPath).Close();                
                 return "0";
             }
         }
