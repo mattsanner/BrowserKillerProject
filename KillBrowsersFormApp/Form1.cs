@@ -135,7 +135,7 @@ namespace KillBrowsersFormApp
             }
             catch(Exception e)
             {
-                File.Create(BrowsersKilledPath);
+                File.Create(BrowsersKilledPath).Close();
                 return "0";
             }
         }
