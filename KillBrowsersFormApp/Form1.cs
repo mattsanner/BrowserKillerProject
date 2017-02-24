@@ -18,14 +18,15 @@ namespace KillBrowsersFormApp
         private const string TeamCityHost = "";
         private static readonly string Username = "";
         private static readonly string Password = "";
-        public const double BuildCheckingInterval = 15000;
+        public const double BuildCheckingInterval = 600000;
         public const string LogFilePath = "KillBrowsersLog.txt";
         public const string BrowsersKilledPath = "BrowsersKilledData.txt";
         public static int BrowsersKillCount = 0;
+        delegate void SetTextCallBack(string text);
 
         public MainForm()
         {
-            File.AppendAllText(LogFilePath, string.Format("{0}. Starting up program!\n", DateTime.Now));
+            File.AppendAllText(LogFilePath, string.Format("{0}. Starting up program!\r\n", DateTime.Now));
             InitializeComponent();
             BrowsersKillCount = Convert.ToInt32(ReturnBrowsersKilledFromFile(BrowsersKilledPath));
             KillCountTextBox.Text = BrowsersKillCount.ToString();
@@ -64,7 +65,7 @@ namespace KillBrowsersFormApp
             catch(Exception except)
             {
                 File.AppendAllText(LogFilePath, 
-                                    string.Format("{0}. User tried to open log but it was not created.\n", DateTime.Now));
+                                    string.Format("{0}. User tried to open log but it was not created.\r\n", DateTime.Now));
             }
         }
 
@@ -79,18 +80,20 @@ namespace KillBrowsersFormApp
             bkc = string.Format("BrowserKillCount={0}", bkc);
             File.Delete(BrowsersKilledPath);
             File.AppendAllText(BrowsersKilledPath, bkc);
-            File.AppendAllText(LogFilePath, "Closing program!\n");
+            File.AppendAllText(LogFilePath, string.Format("{0} Closing program!\r\n", DateTime.Now));
         }
 
-        public static void CheckForBuildsAndKillBrowsers(System.Object source, System.Timers.ElapsedEventArgs e)
+        private void CheckForBuildsAndKillBrowsers(System.Object source, System.Timers.ElapsedEventArgs e)
         {
+            int ChromeDriversKilled = 0;
+            int DriversKilled = 0;
             //Call to see if builds are currently running
             //If not, kill instances of browsers and drivers
             //If so, do nothing.
             if (!AreBuildsRunning())
             {
                 File.AppendAllText(LogFilePath,
-                                    string.Format("{0}. No running builds found. Killing Browsers\n", DateTime.Now));
+                                    string.Format("{0}. No running builds found. Killing Browsers\r\n", DateTime.Now));
                 //Kill Browsers by .exe name (From KillLocalBrowsers batch file)
                 List<string> targets = new string[] { "IEDriverServer", "chromedriver",
                                     "chrome", "firefox", "wires", "iexplore" }.ToList<string>();
@@ -99,15 +102,27 @@ namespace KillBrowsersFormApp
                     foreach (var process in Process.GetProcessesByName(target))
                     {
                         process.Kill();
-                        BrowsersKillCount++;
+                        if(!target.Equals("chrome"))
+                            DriversKilled++;
+                        else
+                            ChromeDriversKilled++;
                     }
                 }
-                File.WriteAllText(BrowsersKilledPath, "BrowserKillCount=" + BrowsersKillCount);                
+                //4-6 background process run with Chrome open + 1 for each browser/tab open
+                if (ChromeDriversKilled > 4)
+                    BrowsersKillCount = BrowsersKillCount + ChromeDriversKilled - 4;
+                else if (ChromeDriversKilled > 0)
+                    BrowsersKillCount = BrowsersKillCount + ChromeDriversKilled;
+
+                BrowsersKillCount += DriversKilled;
+                File.WriteAllText(BrowsersKilledPath, "BrowserKillCount=" + BrowsersKillCount);
+                File.AppendAllText(LogFilePath, string.Format("{0} Killed {1} processes.\r\n", DateTime.Now, (DriversKilled + ChromeDriversKilled)));                                             
             }
             else
             {
-                File.AppendAllText(LogFilePath, string.Format("{0}. Running builds found, doing nothing.\n", DateTime.Now));
+                File.AppendAllText(LogFilePath, string.Format("{0}. Running builds found, doing nothing.\r\n", DateTime.Now));
             }
+            SetKillCountText(BrowsersKillCount.ToString());
         }
 
         /// <summary>
@@ -115,16 +130,16 @@ namespace KillBrowsersFormApp
         /// and pulls a list of the currently running builds.
         /// </summary>
         /// <returns>True if there are running builds, false if there are no running builds</returns>
-        public static bool AreBuildsRunning()
+        private bool AreBuildsRunning()
         {
             var builds = new RemoteTc().Connect(h => h.ToHost(TeamCityHost).AsUser(Username, Password))
                 .GetBuilds(b => b.Running());
-            File.AppendAllText(LogFilePath, "Active builds: " + builds.Count + '\n');
+            File.AppendAllText(LogFilePath, string.Format("{0} Active builds: {1}\r\n", DateTime.Now, builds.Count));
             //Console.WriteLine("Active builds: " + builds.Count + '\n');
             return builds.Count != 0;
         }
 
-        public static string ReturnBrowsersKilledFromFile(string FilePath)
+        private string ReturnBrowsersKilledFromFile(string FilePath)
         {
             try
             {
@@ -137,6 +152,22 @@ namespace KillBrowsersFormApp
             {
                 File.Create(BrowsersKilledPath).Close();
                 return "0";
+            }
+        }
+
+        //Method for changing KillCountTextBox text to
+        //allow the event handler to make a change in the method
+        //(throws cross thread exception)
+        private void SetKillCountText(string text)
+        {
+            if(KillCountTextBox.InvokeRequired)
+            {
+                SetTextCallBack d = new SetTextCallBack(SetKillCountText);
+                this.Invoke(d, new object[] { text });
+            }
+            else
+            {
+                KillCountTextBox.Text = text;
             }
         }
     }
