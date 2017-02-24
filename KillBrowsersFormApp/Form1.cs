@@ -78,7 +78,8 @@ namespace KillBrowsersFormApp
         {
             string bkc = BrowsersKillCount.ToString();
             bkc = string.Format("BrowserKillCount={0}", bkc);
-            File.Delete(BrowsersKilledPath);
+            if(File.Exists(BrowsersKilledPath))
+                File.Delete(BrowsersKilledPath);
             File.AppendAllText(BrowsersKilledPath, bkc);
             File.AppendAllText(LogFilePath, string.Format("{0} Closing program!\r\n", DateTime.Now));
         }
@@ -132,11 +133,27 @@ namespace KillBrowsersFormApp
         /// <returns>True if there are running builds, false if there are no running builds</returns>
         private bool AreBuildsRunning()
         {
+<<<<<<< HEAD
             var builds = new RemoteTc().Connect(h => h.ToHost(TeamCityHost).AsUser(Username, Password))
                 .GetBuilds(b => b.Running());
             File.AppendAllText(LogFilePath, string.Format("{0} Active builds: {1}\r\n", DateTime.Now, builds.Count));
             //Console.WriteLine("Active builds: " + builds.Count + '\n');
             return builds.Count != 0;
+=======
+            try
+            {
+                var builds = new RemoteTc().Connect(h => h.ToHost(TeamCityHost).AsUser(Username, Password))
+                    .GetBuilds(b => b.Running());
+                File.AppendAllText(LogFilePath, "Active builds: " + builds.Count + '\n');
+                return builds.Count != 0;
+            }
+            catch(Exception e)
+            {
+                File.AppendAllText(LogFilePath, string.Format("Exception occurred when accessing TeamCity builds: \n{0}", e.Message));
+                //return true to make sure browser are not killed
+                return true;
+            }
+>>>>>>> 69e7a54fa2964b1eb0a2eac9e7b9dbc02d5de856
         }
 
         private string ReturnBrowsersKilledFromFile(string FilePath)
@@ -149,7 +166,7 @@ namespace KillBrowsersFormApp
                 return BrowsersKilled;
             }
             catch(Exception e)
-            {
+            { 
                 File.Create(BrowsersKilledPath).Close();
                 return "0";
             }
